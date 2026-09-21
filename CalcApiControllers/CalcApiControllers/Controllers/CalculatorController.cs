@@ -19,4 +19,25 @@ public class CalculatorController : ControllerBase
     {
         return _calculator.Add(a, b);
     }
+
+    [HttpGet]
+    [Route("multiply")]
+    public ActionResult<double> MultiplyNumbers(double a, double b)
+    {
+        return _calculator.Multiply(a, b);
+    }
+
+    [HttpGet]
+    [Route("divide")]
+    public ActionResult<double> DivideNumbers(double a, double b)
+    {
+        return _calculator.Divide(a, b);
+    }
+
+    [HttpGet]
+    [Route("subtract")]
+    public ActionResult<double> SubtractNumbers(double a, double b)
+    {
+        return _calculator.Subtract(a, b);
+    }
 }
