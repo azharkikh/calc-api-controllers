@@ -41,3 +41,20 @@ public class CalculatorController : ControllerBase
         return _calculator.Subtract(a, b);
     }
 }
+
+public class ExtendedCalculatorController : ControllerBase
+{
+    private readonly ExtendedCalculator _extendedCalculator;
+
+    public ExtendedCalculatorController(ExtendedCalculator extendedCalculator)
+    {
+        _extendedCalculator = extendedCalculator;
+    }
+    
+    [HttpGet]
+    [Route("calculatePower")]
+    public ActionResult<double> CalculatePower(double a, double b)
+    {
+        return _extendedCalculator.CalculatePower(a, b);
+    }
+}

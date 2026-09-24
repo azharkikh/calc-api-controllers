@@ -12,6 +12,7 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddSingleton<Calculator>();
+        builder.Services.AddSingleton<ExtendedCalculator>();
         builder.Services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new() { Title = "Calculator API", Version = "v1" });
