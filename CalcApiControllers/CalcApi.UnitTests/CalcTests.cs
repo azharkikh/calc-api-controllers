@@ -10,6 +10,13 @@ public class CalcTests
     public Calculator? Calculator { get; set; }
     public ExtendedCalculator? ExtendedCalculator { get; set; }
     
+    [SetUp]
+    public void Setup()
+    {
+        Calculator = new Calculator();
+        ExtendedCalculator = new ExtendedCalculator();
+    }
+    
     [TestCase("Multiply", 2, 3, 6)]
     [TestCase("Add", 2, 3, 5)]
     [TestCase("Divide", 4, 2, 2)]
@@ -26,23 +33,18 @@ public class CalcTests
         switch (operation)
         {
             case "Multiply":
-                Calculator = new Calculator();
                 z = Calculator.Multiply(x, y);
                 break;
             case "Add":
-                Calculator = new Calculator();
                 z = Calculator.Add(x, y);
                 break;
             case "Divide": 
-                Calculator = new Calculator();
                 z = Calculator.Divide(x, y);
                 break;
             case "Subtract":
-                Calculator = new Calculator();
                 z = Calculator.Subtract(x, y);
                 break;
             case "CalculatePower": 
-                ExtendedCalculator = new ExtendedCalculator();
                 z = ExtendedCalculator.CalculatePower(x, y);
                 break;
             default:                                                                                                                                                         
@@ -52,5 +54,4 @@ public class CalcTests
         //Assert
         Assert.That(z, Is.EqualTo(expected));
     }
-    
 }
