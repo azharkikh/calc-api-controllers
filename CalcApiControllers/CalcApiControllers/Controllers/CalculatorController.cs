@@ -1,3 +1,4 @@
+using CalcApiControllers.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CalcApiControllers.Controllers;
@@ -29,7 +30,7 @@ public class CalculatorController : ControllerBase
 
     [HttpGet]
     [Route("divide")]
-    public ActionResult<double> DivideNumbers(double a, double b)
+    public ActionResult<double> DivideNumbers(double a, [NotZero] double b)
     {
         return _calculator.Divide(a, b);
     }

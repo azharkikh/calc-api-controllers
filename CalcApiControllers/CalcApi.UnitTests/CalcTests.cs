@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using CalcApiControllers;
+﻿using CalcApiControllers;
 using NUnit.Framework;
 
 namespace CalcApi.UnitTests;
@@ -21,7 +20,7 @@ public class CalcTests
         //Arrange
         
         //Act
-        double z = 0;
+        double z;
 
         switch (operation)
         {
