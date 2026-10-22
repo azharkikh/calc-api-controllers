@@ -1,25 +1,27 @@
-﻿using CalcApiControllers;
+﻿using System.Net;
+using CalcApiControllers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
 
 namespace CalcApi.Integration.Tests;
 
 [TestFixture]
-public class IntegrationTests
+public class CalcIntegrationTests
 {
     
-    private WebApplicationFactory<Program> program;
+    private readonly WebApplicationFactory<Program> _program;
     
-    public IntegrationTests()
+    public CalcIntegrationTests()
     {
-        program = new WebApplicationFactory<Program>();
+        _program = new WebApplicationFactory<Program>();
     }
 
-    [OneTimeTearDownAttribute]
+    [OneTimeTearDown]
     public void OneTimeTearDownAttribute()
     {
-        program.Dispose();
+        _program.Dispose();
     }
+
     
     [TestCase("Add", 2, 3, 5)]
     [TestCase("Multiply", 2, 3, 6)]
@@ -28,7 +30,7 @@ public class IntegrationTests
     [TestCase("CalculatePower", 2, 3, 8)] 
     public async Task OperationTest(string operation, double x, double y, double expected)
     {
-        var client = program.CreateClient();
+        var client = _program.CreateClient();
         
         HttpResponseMessage result;
 
@@ -53,9 +55,21 @@ public class IntegrationTests
                 throw new ArgumentException($"Unknown operation: {operation}");  
         }
         
-       Assert.That(result.IsSuccessStatusCode);
+        Assert.That(result.IsSuccessStatusCode);
        
-       var testContent = await result.Content.ReadAsStringAsync();
-       Assert.That(double.Parse(testContent), Is.EqualTo(expected));
+        var testContent = await result.Content.ReadAsStringAsync();
+        Assert.That(double.Parse(testContent), Is.EqualTo(expected));
+    }
+    
+    [Test]
+    public async Task OperationDTest()
+    {
+        var client = _program.CreateClient();
+        
+        var result = await client.GetAsync($"/Calculator/divide?a=4&b=0");
+
+        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest)); 
+        var testContent = await result.Content.ReadAsStringAsync();
+        Assert.That(testContent, Is.Not.Empty);
     }
 }
