@@ -11,56 +11,79 @@ using NUnit.Framework;
 namespace CalcApi.Integration.Tests;
 
 [TestFixture]
-
 public class CurrencyIntegrationTests
 {
+    private const double Amount = 2;
+    private const double ExchangeRate = 501;
+    private const string FromCurrency = "RUB";
+    private const string ToCurrency = "TRY";
+    private const string UnknownCurrency = "XXX";
+    
+    private static string ConvertUrl(string from, string to)
+    {
+        return $"/Currency/convert?amount={Amount}&from={from}&to={to}";
+    }
+
     private readonly WebApplicationFactory<Program> _program;
-     
+    private readonly ExchangeRateClientStub _stub = new ExchangeRateClientStub();
+
     public CurrencyIntegrationTests()
     {
         _program = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
             {
                 services.RemoveAll<IExchangeRateClient>();
-                services.AddSingleton<IExchangeRateClient, ExchangeRateClientStub>();
+                services.AddSingleton<IExchangeRateClient>(_stub);
             }));
     }
-         
+
     [OneTimeTearDown]
     public void OneTimeTearDownAttribute()
     {
         _program.Dispose();
     }
-          
-    [Test]
-    public async Task CurrencyConverter_UnknownCurrency_BadRequest(){
-       
-       var client = _program.CreateClient();
-       
-       var result = await client.GetAsync($"/Currency/convert?amount=2&from=rub&to=TRY");
 
-       Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest)); 
-    }
-    
     [Test]
-    public async Task CurrencyConverter_RightCurrency_Ok(){
-       
+    public async Task CurrencyConverter_UnknownCurrency_BadRequest()
+    {
+        // Arrange
+        _stub.SetExchangeRate(null);
         var client = _program.CreateClient();
-       
-        var result = await client.GetAsync($"/Currency/convert?amount=2&from=rub&to=TRY");
 
-        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK)); 
+        // Act
+        var result = await client.GetAsync(ConvertUrl(FromCurrency, UnknownCurrency));
+
+        // Assert
+        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
     }
-    
+
     [Test]
-    public async Task CurrencyConverter_Result_(){
-       
+    public async Task CurrencyConverter_KnownCurrency_Ok()
+    {
+        // Arrange
+        _stub.SetExchangeRate(ExchangeRate);
         var client = _program.CreateClient();
-       
-        var result = await client.GetAsync($"/Currency/convert?amount=2&from=rub&to=TRY");
 
-      //  Assert.That(result.StatusCode, Is.EqualTo()); 
+        // Act
+        var result = await client.GetAsync(ConvertUrl(FromCurrency, ToCurrency));
+
+        // Assert
+        Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
-    
-         
+
+    [Test]
+    public async Task CurrencyConverter_KnownCurrency_ReturnsAmountMultipliedByRate()
+    {
+        // Arrange
+        _stub.SetExchangeRate(ExchangeRate);
+        var client = _program.CreateClient();
+        var expected = Amount * ExchangeRate;
+
+        // Act
+        var result = await client.GetAsync(ConvertUrl(FromCurrency, ToCurrency));
+        var body = await result.Content.ReadAsStringAsync();
+
+        // Assert
+        Assert.That(double.Parse(body), Is.EqualTo(expected));
+    }
 }
