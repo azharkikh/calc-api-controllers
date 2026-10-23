@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace CalcApi.Integration.Tests;
 
 [TestFixture]
-public class CurrencyIntegrationTests
+public class CurrencyIntegrationTests : IntegrationTestBase
 {
     private const double Amount = 2;
     private const double ExchangeRate = 501;

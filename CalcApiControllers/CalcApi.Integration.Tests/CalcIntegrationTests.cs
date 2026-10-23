@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace CalcApi.Integration.Tests;
 
 [TestFixture]
-public class CalcIntegrationTests
+public class CalcIntegrationTests : IntegrationTestBase
 {
     
     private readonly WebApplicationFactory<Program> _program;
