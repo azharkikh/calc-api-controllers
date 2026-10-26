@@ -30,7 +30,9 @@ public class CurrencyIntegrationTests : IntegrationTestBase
     public CurrencyIntegrationTests()
     {
         _program = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            .WithWebHostBuilder(builder => builder
+                .UseSetting("ConnectionStrings:Calc", Mysql.GetConnectionString())
+                .ConfigureTestServices(services =>
             {
                 services.RemoveAll<IExchangeRateClient>();
                 services.AddSingleton<IExchangeRateClient>(_stub);

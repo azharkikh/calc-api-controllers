@@ -13,7 +13,9 @@ public class CalcIntegrationTests : IntegrationTestBase
     
     public CalcIntegrationTests()
     {
-        _program = new WebApplicationFactory<Program>();
+        _program = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder => builder
+                .UseSetting("ConnectionStrings:Calc", Mysql.GetConnectionString()));
     }
 
     [OneTimeTearDown]
